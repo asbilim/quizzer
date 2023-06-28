@@ -1,0 +1,27 @@
+<form class="w-full rounded-lg  flex flex-col items-center justify-center gap-8 " method="POST">
+    <div class="titles flex flex-col gap-3  w-full items-center justify-center">
+        <h1 class="text-4xl font-bold my-8">Quiz Login</h1>
+    </div>
+    
+    <div class="mt-4 w-full px-4 md:px-36">
+      <label for="email" class="block text-sm">Username</label>
+      <input type="text" id="username" name="username" placeholder="Enter your username" class="w-full px-3 py-4 mt-1 text-base border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300">
+    </div>
+    <div class="mt-4 mx-auto w-full px-4 md:px-36">
+      <label for="password" class="block text-sm">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" class="w-full px-3 py-4 mt-1 text-base border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300">
+    </div>
+    <div class="flex items-center justify-between mt-4 w-full px-4 md:px-36">
+      <div>
+        <input type="checkbox" id="remember" name="remember" class="border-gray-300 rounded ">
+        <label for="remember" class="ml-2 text-sm">Remember me</label>
+      </div>
+      <div>
+        <a href="{% url 'auth-register' %}" class="text-sm text-indigo-600 hover:underline px-4">Don't have an account?</a>
+      </div>
+    </div>
+    <div class="px-4 md:px-36 w-full">
+      <button type="submit" class="w-full px-4 py-2 text-lg font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring focus:ring-indigo-300 btn btn-wide no-animation">Login</button>
+    </div>
+    {% csrf_token %}
+  </form>
