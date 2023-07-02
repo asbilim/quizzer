@@ -1,0 +1,16 @@
+{% load static %}
+<div class="card w-96 bg-base-100 shadow-xl image-full">
+    <figure><img src="{% static 'listings/images/muscu.jpg' %}" alt="Shoes" /></figure>
+    <div class="card-body">
+      <h2 class="card-title flex flex-col items-start">
+        Mathematics in college
+        <p class="w-2/5 h-1 bg-blue-400"></p>
+      </h2>
+      <p class="text-ellipsis text-base">Take this quizz to increase your mathematics skills and become a better mathematician</p>
+      <div class="card-actions justify-start">
+        {% for i in "some"|make_list %}
+            {% include 'listings/components/tags.html' with tag="beautiful" %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>

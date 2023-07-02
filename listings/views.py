@@ -7,6 +7,14 @@ def home(request):
 
     return render(request, 'listings/home.html')
 
+def quizset(request):
+
+    return render(request, 'listings/quizset.html')
+
+def exam(request):
+
+    return render(request, 'listings/exams.html')
+
 
 def signin(request):
 

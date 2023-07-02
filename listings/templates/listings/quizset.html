@@ -1,0 +1,23 @@
+{% extends "listings/base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="welcome flex flex-col w-full p-8 gap-4 my-12 items-center">
+  <h3 class="text-4xl font-bold text-white">Mathematics in college</h3>
+  <p class="text-lg">train your brain with different categories of quizsets</p>
+  <div class="call-to-action">
+    <button class="px-24 py-4 bg-blue-600 text-white rounded-md font-bold leading-none hover:bg-blue-800 ease-in focus:bg-blue-600 focus:ring focus:ring-blue-200">Select Randomly</button>
+  </div>
+</div>
+
+<div class="flex mx-24 h-1 bg-white ">
+
+</div>
+<div class="cars flex items-center justify-center flex-wrap gap-12 py-12">
+  {% for i in "some"|make_list %}
+    {% include 'listings/components/exam.html' %}
+    {% include 'listings/components/card.html' %}
+  {% endfor %}
+</div>
+
+{% endblock %}
