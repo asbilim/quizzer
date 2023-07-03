@@ -1,16 +1,70 @@
 {% load static %}
-<div class="card w-96 bg-base-100 shadow-xl image-full">
-    <figure><img src="{% static 'listings/images/muscu.jpg' %}" alt="Shoes" /></figure>
+{% block css %}
+<style>
+    @keyframes colorPulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+
+    .difficulty-indicator {
+        animation: colorPulse .8s infinite;
+    }
+</style>
+{% endblock css %}
+
+<a href="{% url 'activate-quiz' id %}">
+  <div class="card w-96 bg-base-100 shadow-xl image-full">
+    <figure><img src="{{image.url}}" alt="Shoes" /></figure>
     <div class="card-body">
-      <h2 class="card-title flex flex-col items-start">
-        Mathematics in college
+      <h2 class="card-title flex flex-col items-start text-white !font-semibold">
+        {{name}}
         <p class="w-2/5 h-1 bg-blue-400"></p>
       </h2>
-      <p class="text-ellipsis text-base">Take this quizz to increase your mathematics skills and become a better mathematician</p>
+      <p class="text-white text-base">{{ description|truncatewords:25|default:'' }}{% if description|wordcount > 25 %}...{% endif %}</p>
       <div class="card-actions justify-start">
         {% for i in "some"|make_list %}
-            {% include 'listings/components/tags.html' with tag="beautiful" %}
+          {% include 'listings/components/tags.html' with tag="beautiful" %}
         {% endfor %}
       </div>
     </div>
   </div>
+  <div class="mt-4 flex justify-between items-center">
+    <span class="text-sm font-medium text-white">Quiz Set</span>
+    <div class="flex space-x-2 items-center">
+      <span class="text-sm font-medium text-white">Difficulty:</span>
+      <span class="difficulty-indicator h-2 w-16 rounded-full" data-difficulty="{{ difficulty }}"></span>
+    </div>
+  </div>
+</a>
+
+{% block script %}
+<script>
+  function setDifficultyIndicators() {
+    // Map difficulty value to color class
+    const difficultyColorMap = {
+      'E': 'bg-green-400',
+      'M': 'bg-yellow-400',
+      'H': 'bg-red-500',
+    };
+
+    // Get all the difficulty indicator elements
+    const difficultyIndicators = document.querySelectorAll('.difficulty-indicator');
+
+    // Loop through each difficulty indicator
+    difficultyIndicators.forEach(indicator => {
+      // Get the difficulty value for the current quiz item
+      const difficultyValue = indicator.getAttribute('data-difficulty');
+
+      // Remove any existing color classes
+      indicator.classList.remove(...Object.values(difficultyColorMap));
+
+      // Set the background color class based on the difficulty value
+      indicator.classList.add(difficultyColorMap[difficultyValue]);
+    });
+  }
+
+  // Call the setDifficultyIndicators() function to initialize the difficulty indicators
+  setDifficultyIndicators();
+</script>
+{% endblock script %}

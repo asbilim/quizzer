@@ -1,0 +1,13 @@
+<ul class="steps">
+    {% for i in range(num_items) %}
+      {% if i == current_item %}
+        <li class="step step-info">{{ i + 1 }}</li>
+      {% else %}
+        <li class="step">{{ i + 1 }}</li>
+      {% endif %}
+    {% endfor %}
+</ul>
+
+{% block script %}
+
+{% endblock %}

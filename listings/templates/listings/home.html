@@ -14,8 +14,8 @@
 
 </div>
 <div class="cars flex items-center justify-center flex-wrap gap-12 py-12">
-  {% for i in "something"|make_list %}
-    {% include 'listings/components/card.html' %}
+  {% for quiz in quizzes %}
+    {% include 'listings/components/card.html' with image=quiz.image name=quiz.name description=quiz.description difficulty=quiz.difficulty_level id=quiz.id %}
   {% endfor %}
 </div>
 
