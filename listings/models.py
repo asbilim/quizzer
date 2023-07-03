@@ -227,5 +227,18 @@ class QuizSet(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_total_score(self):
+        """
+        Computes the total score of the QuizSet by summing the scores of all quizzes.
+        """
+        return sum([quiz.compute_score() for quiz in self.quizzes.all()])
+
+    def get_average_score(self):
+        """
+        Computes the average score of the QuizSet.
+        """
+        total_score = self.get_total_score()
+        return total_score / self.quizzes.count() if self.quizzes.count() > 0 else 0
 
 
