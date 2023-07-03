@@ -25,6 +25,18 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+    
+    def get_completed_quizzes(self):
+        """
+        Returns all quizzes that the user has completed (all questions done).
+        """
+        return self.quizzes.filter(questions__is_done=True)
+
+    def get_passed_exams(self):
+        """
+        Returns all exams that the user has passed.
+        """
+        return self.exams.filter(has_passed=True)
 
 # Quiz related models
 class QuizCategories(models.Model):
@@ -57,7 +69,7 @@ class Question(models.Model):
     category = models.ForeignKey(QuizCategories, on_delete=models.CASCADE, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     answers = models.ManyToManyField(Answer, blank=True)
-    is_done = models.BooleanField(default=True)
+    is_done = models.BooleanField(default=False)
 
     def __str__(self):
         return self.text
@@ -71,12 +83,37 @@ class Quiz(models.Model):
     questions = models.ManyToManyField(Question)
     question_value = models.IntegerField()
     description = models.TextField(blank=True)
-    final_score = models.IntegerField(blank=True)
+    final_score = models.IntegerField(blank=True,null=True)
     image = models.ImageField(blank=True, upload_to="media/quiz/")
     difficulty_level = models.CharField(max_length=1, choices=DIFFICULTY_LEVELS, blank=True)
 
     def __str__(self):
         return self.name
+    
+    def compute_score(self):
+        """
+        Computes the score of the quiz by summing the value of the questions that are done and correctly answered.
+        Assumes question_value attribute on Question model.
+        """
+        total_score = 0
+        for question in self.questions.filter(is_done=True):
+            if question.answers.filter(is_correct=True).exists():
+                total_score += question.question_value
+        return total_score
+    
+    def check_completion(self):
+        """
+        Check if all questions in the quiz have been done.
+        """
+        return self.questions.filter(is_done=False).count() == 0
+
+    def get_next_question(self):
+        """
+        Returns the next question in the quiz that needs to be done.
+        """
+        return self.questions.filter(is_done=False).first()
+
+
 
 # Exam related models
 class Exam(models.Model):
@@ -116,10 +153,59 @@ class Caracteristics(models.Model):
         ('15', 'Sports'),
         ('16', 'Networking'),
         ('15', 'Database'),
+        ('17', 'Front End'),
+        ('18', 'Back End'),
+        ('19', 'Full Stack'),
+        ('20', 'Web Development'),
+        ('21', 'Mobile Development'),
+        ('22', 'Database'),
+        ('23', 'API'),
+        ('24', 'Open Source'),
+        ('25', 'Security'),
+        ('26', 'DevOps'),
+        ('27', 'System Design'),
+        ('28', 'Algorithms'),
+        ('29', 'Data Structures'),
+        ('30', 'Software Design'),
+        ('31', 'Software Engineering'),
+        ('32', 'Version Control'),
+        ('33', 'Testing'),
+        ('34', 'Debugging'),
+        ('35', 'Cloud'),
+        ('36', 'Programming Languages'),
+        ('37', 'Problem Solving'),
+        ('38', 'Game Development'),
+        ('39', 'UI/UX'),
+        ('40', 'Software Architecture'),
+        ('17', 'JavaScript'),
+        ('181', 'Python'),
+        ('191', 'Java'),
+        ('201', 'C++'),
+        ('211', 'PHP'),
+        ('221', 'HTML'),
+        ('231', 'CSS'),
+        ('241', 'SQL'),
+        ('251', 'Ruby'),
+        ('261', 'C#'),
+        ('271', 'C'),
+        ('281', 'React'),
+        ('291', 'Angular'),
+        ('301', 'jQuery'),
+        ('311', 'Android'),
+        ('321', 'iOS'),
+        ('331', 'Swift'),
+        ('341', 'Node.js'),
+        ('351', 'ASP.NET'),
+        ('361', 'Linux'),
+        ('371', 'Shell'),
+        ('381', 'Algorithms'),
+        ('391', 'Data structures'),
+        ('401', 'Programming fundamentals')
+
     ]
 
     caracteristics = models.CharField(
-        max_length=2,
+        max_length=5,
         choices=CARACTERISTICS_CHOICES,
         default='1',
     )
@@ -134,7 +220,7 @@ class QuizSet(models.Model):
     """
     name = models.CharField(max_length=50)
     quizzes = models.ManyToManyField(Quiz)
-    exams = models.ManyToManyField(Exam)
+    exams = models.ManyToManyField(Exam,null=True,blank=True)
     description = models.TextField(blank=True)
     # Add a foreign key to Caracteristics
     caracteristics = models.ManyToManyField(Caracteristics)
