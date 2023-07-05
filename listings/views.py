@@ -4,6 +4,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from listings.models import Quiz,Answer,QuizSet,Question
 
+
+def four0four(request,exception):
+
+    return render(request,'listings/404.html',status=404)
+
 def home(request):
 
     all_quizzes = Quiz.objects.all()
@@ -108,7 +113,7 @@ def quiz_view(request, quiz_id, question_id):
         current_question_index = 0
         current_question = questions[current_question_index]
     else:
-        current_question = get_object_or_404(Question, pk=question_id)
+        current_question = quiz.get_next_question()
         if current_question not in questions:
             return render(request, '404.html')  # Or however you want to handle this case
         current_question_index = questions.index(current_question)

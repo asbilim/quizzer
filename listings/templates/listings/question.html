@@ -105,16 +105,16 @@
 
     // Remove focus classes from all answers
     answerElements.forEach(answer => {
-      answer.classList.remove('focus:bg-blue-600', 'focus:text-white');
+      answer.classList.remove('bg-blue-400', 'text-white');
     });
 
     // Add focus classes to clicked element
-    element.classList.add('focus:bg-blue-600', 'focus:text-white');
+    element.classList.add('bg-blue-400', 'text-white');
 
     // Find the inner radio button and check it
     const radioButton = element.querySelector('input[type="radio"]');
     radioButton.checked = true;
-  }
+}
 
   function skipQuestion() {
     // Find the skip radio button and check it

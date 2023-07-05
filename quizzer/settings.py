@@ -258,3 +258,5 @@ JAZZMIN_SETTINGS = {
 JAZZMIN_SETTINGS["show_ui_builder"] = True
 
 LOGIN_URL = 'auth-login'
+
+handler404 = 'listings.views.four0four'
