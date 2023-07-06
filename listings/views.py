@@ -2,8 +2,12 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth import login as login2,authenticate,logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from listings.models import Quiz,Answer,QuizSet,Question
+from listings.models import Quiz, Answer, QuizSet, Question, UserQuizProgress
 
+
+def results(request,score):
+
+    return render(request,'listings/result.html',{'score':score})
 
 def four0four(request,exception):
 
@@ -82,62 +86,85 @@ def signout(request):
 
 @login_required
 def activate_quiz(request, quiz_id):
-    user = request.user
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
-    
-    # Check if the user is already assigned to this quiz
-    if quiz not in user.quizzes.all():
-        # If not, assign the quiz to the user
-        user.quizzes.add(quiz)
 
-    # Check if all questions in the quiz are done
-    if quiz.check_completion():
-        # If all questions are done, redirect to the score view
-        return redirect('score_view', quiz_id=quiz_id)
+    user = request.user
+    try:
+        quiz = Quiz.objects.get(pk=quiz_id)
+    except Quiz.DoesNotExist:
+        #send to the error page
+        return redirect('main-home-page')
+    
+    
+    user_quiz, created = UserQuizProgress.objects.get_or_create(user=user, quiz=quiz)
+
+
+    if created:
+
+        current_question = user_quiz.quiz.questions.first()
+
+        return redirect('single-quiz', quiz_id=current_question.id, question_id=1)
+    
+    else:
+        current_question = user_quiz.get_next_question()
+        if not current_question:
+            return redirect('results-quiz',score=user_quiz.score)
+    
+    
 
     # Otherwise, redirect to the quiz view
-    return redirect('single-quiz', quiz_id=quiz_id, question_id=1)
+    return redirect('single-quiz', quiz_id=current_question.id, question_id=1)
 
 @login_required
 def quiz_view(request, quiz_id, question_id):
-    user = request.user
-    quiz = get_object_or_404(Quiz, pk=quiz_id)
 
-    # Ensure the quiz is assigned to the user
-    if quiz not in user.quizzes.all():
-        return redirect('main-home-page')  # Or however you want to handle this case
+
+    user = request.user
+
+    try:
+        quiz = Quiz.objects.get(pk=quiz_id)
+    except Quiz.DoesNotExist:
+        #send to the error page
+        return redirect('main-home-page')
+
+    try:
+        userquiz = UserQuizProgress.objects.get(user=user,quiz=quiz)
+    except UserQuizProgress.DoesNotExist:
+        #send to the error page
+        return redirect('main-home-page')
+    
+
+    
+    
+        # Check if all questions in the quiz are done
+    # if quiz.check_completion():
+    #     # If all questions are done, redirect to the score view
+    #     return redirect('score_view', quiz_id=quiz_id)
+
+    current_question = userquiz.get_next_question()
+    if not current_question:
+        return redirect('results-quiz',score=userquiz.score)
+    current_question_index = userquiz.current_question_index
+
 
     questions = list(quiz.questions.all())
 
-    if question_id is None:
-        current_question_index = 0
-        current_question = questions[current_question_index]
-    else:
-        current_question = quiz.get_next_question()
-        if current_question not in questions:
-            return render(request, '404.html')  # Or however you want to handle this case
-        current_question_index = questions.index(current_question)
 
     if request.method == 'POST':
         # Verify answer and mark question as done here
         # You may need to adjust this to fit your answer submission form
-        answer_id = request.POST.get('answer_id')
-        answer = get_object_or_404(Answer, pk=answer_id)
-
+        answer_id = request.POST.get('answer')
+        try:
+            answer = Answer.objects.get(id=answer_id)
+        except Answer.DoesNotExist:
+            userquiz.mark_question_done()
+            userquiz.save()
         # Check if the answer is correct
-        if answer in current_question.answers.all() and answer.is_correct:
-            # If the answer is correct, mark the question as done
-            current_question.is_done = True
-            current_question.save()
-
-        # Check if all questions in the quiz are done
-        if quiz.check_completion():
-            # If all questions are done, redirect to the score view
-            return redirect('score_view', quiz_id=quiz_id)
-        
+        userquiz.mark_question_done()
+        userquiz.save()
         # Otherwise, redirect to the next question
         next_question = quiz.get_next_question()
-        return redirect('quiz_view', quiz_id=quiz_id, question_id=next_question.id)
+        
+        return redirect('single-quiz', quiz_id=quiz_id, question_id=5)
 
     return render(request, 'listings/question.html', {
         'quiz': quiz,

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.serializers import serialize,deserialize
 
 # Constants for choices
 QUESTION_TYPES = (
@@ -70,6 +71,7 @@ class Question(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     answers = models.ManyToManyField(Answer, blank=True)
     is_done = models.BooleanField(default=False)
+    is_correct = models.BooleanField(default=False,null=True,blank=True)
 
     def __str__(self):
         return self.text
@@ -113,6 +115,74 @@ class Quiz(models.Model):
         """
         return self.questions.filter(is_done=False).first()
 
+
+class UserQuizProgress(models.Model):
+    """
+    Model representing a user's progress in a quiz.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE,null=True)
+    current_question_index = models.IntegerField(default=0)
+    is_done = models.BooleanField(default=False)
+    is_correct = models.BooleanField(default=False, null=True, blank=True)
+    questions = models.TextField(blank=True, null=True,default='')
+    score = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.quiz.name}'
+
+
+    def get_current_question(self):
+        # Retrieve the current question
+        questions = list(self.quiz.questions.all())
+        if self.current_question_index < len(questions):
+            return questions[self.current_question_index]
+        return None
+
+    def get_unanswered_questions(self):
+        return self.quiz.questions.filter(is_done=False)
+
+    def get_correctly_answered_questions(self):
+        return self.quiz.questions.filter(is_correct=True)
+
+    def get_incorrectly_answered_questions(self):
+        return self.quiz.questions.filter(is_done=True, is_correct=False)
+
+    def get_score(self):
+        return self.get_correctly_answered_questions().count()
+
+    def get_total_questions(self):
+        return self.quiz.questions.count()
+
+    def get_progress(self):
+        total_questions = self.get_total_questions()
+        if total_questions == 0:
+            return 0
+        return 100 * self.quiz.questions.filter(is_done=True).count() / total_questions
+
+    def is_complete(self):
+        self.is_done
+
+    def get_next_question(self):
+        questions = list(self.quiz.questions.all())
+        if self.current_question_index < len(questions):
+            return questions[self.current_question_index]
+        return None
+
+    def mark_question_done(self):
+        
+        if self.current_question_index == len(list(self.quiz.questions.all())) - 1:
+            self.score += self.quiz.question_value
+            self.is_done = True
+        self.current_question_index += 1
+        self.save()
+
+    def reset(self):
+        self.current_question_index = 0
+        self.score = 0
+        self.save()
+        self.initialize_questions()
 
 
 # Exam related models

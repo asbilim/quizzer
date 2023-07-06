@@ -64,12 +64,12 @@
         {% csrf_token %}
         <div class="question-card flex flex-col gap-4">
             <h3 class="text-white text-md font-medium text-center">{{ current_question.text }}</h3>
+            <input type="hidden" name="answer" value="" hidden/>
             {% if current_question.question_type == 'TF' %}
                 <div class="mt-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mx-12">
                     {% for answer in current_question.answers.all %}
-                    <div class="group relative bg-white shadow-lg rounded-lg cursor-pointer transform transition-transform duration-500 ease-in-out" onclick="handleAnswerClick(this)" data-value="{{answer.pk}}">
-                        <input type="radio" name="answer" value="{{ answer.id }}" hidden/>
-                        <div class="relative z-10 bg-gradient-to-r text-base-content leading-tight text-xs px-4 py-2 rounded-lg">{{answer.text}}</div>
+                    <div class="group relative bg-white shadow-lg rounded-lg cursor-pointer transform transition-transform duration-500 ease-in-out answer" onclick="handleAnswerClick(this)" data-value="{{answer.pk}}">
+                        <div class="relative z-10 bg-gradient-to-r text-base-content leading-tight text-xs px-4 py-2 rounded-lg" data-id="{{answer.id}}">{{answer.text}}</div>
                     </div>
                     {% endfor %}
                 </div>
@@ -77,8 +77,7 @@
                 <div class="mt-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mx-12">
                     {% for answer in current_question.answers.all %}
                         <div class="group relative bg-white shadow-lg rounded-lg cursor-pointer transform transition-transform duration-500 ease-in-out p-4 hover:bg-blue-400 hover:text-white focus:bg-blue-600 focus:text-white answer" onclick="handleAnswerClick(this)" data-value="{{answer.pk}}">
-                            <input type="radio" name="answer" value="{{ answer.id }}" hidden/>
-                            <div class="relative z-10 bg-gradient-to-rleading-tight text-xs px-4 py-2 rounded-lg">{{answer.text}}</div>
+                            <div class="relative z-10 bg-gradient-to-rleading-tight text-xs px-4 py-2 rounded-lg" data-id="{{answer.id}}">{{answer.text}}</div>
                         </div>
                     {% endfor %}
                 </div>
@@ -87,7 +86,7 @@
 
         <div class="flex justify-center mt-24 gap-4">
             <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-l" onclick="previousQuestion()">Previous</button>
-            <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-r" onclick="nextQuestion()">Next</button>
+            <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-r" onclick="nextQuestion()">Next</button>
             <button type="button" class="bg-transparednt border-0 text-white font-semibold py-2 px-4" onclick="skipQuestion()">Skip</button>
         </div>
     </form>
@@ -97,49 +96,44 @@
 
 {% block script %}
 <script>
- function handleAnswerClick(element) {
-
-    console.log(element)
-    // Find all answer elements
-    const answerElements = document.querySelectorAll('.answer');
-
-    // Remove focus classes from all answers
-    answerElements.forEach(answer => {
-      answer.classList.remove('bg-blue-400', 'text-white');
-    });
-
-    // Add focus classes to clicked element
-    element.classList.add('bg-blue-400', 'text-white');
-
-    // Find the inner radio button and check it
-    const radioButton = element.querySelector('input[type="radio"]');
-    radioButton.checked = true;
-}
-
-  function skipQuestion() {
-    // Find the skip radio button and check it
-    // This assumes you have a specific skip value defined
-    const radioButton = document.querySelector('input[type="radio"][value="skip"]');
-    if (radioButton) {
-      radioButton.checked = true;
+    // Handle answer click
+    function handleAnswerClick(element) {
+        console.log(element)
+        // Find all answer elements
+        const answerElements = document.querySelectorAll('.answer');
+    
+        // Remove focus classes from all answers
+        answerElements.forEach(answer => {
+          answer.classList.remove('bg-blue-400', 'text-white');
+        });
+    
+        // Add focus classes to clicked element
+        element.classList.add('bg-blue-400', 'text-white');
+    
+        // Set the value of the hidden input to the id of the clicked answer
+        document.querySelector('input[name="answer"]').value = element.getAttribute('data-value');
+    
+        // Log the value of the input
+        console.log(document.querySelector('input[name="answer"]').value);
     }
-
-    // Submit the form when skip button is clicked
-    const form = document.getElementById('quiz-form');
-    form.submit();
-  }
-
-  function nextQuestion() {
-    // Submit the form when next button is clicked
-    const form = document.getElementById('quiz-form');
-    form.submit();
-  }
-
-  function previousQuestion() {
-    // Navigate to the previous question
-    // This can be done by making an API call to the backend or by storing question state
-    // The actual implementation depends on how your backend is set up
-  }
-
+    
+    // Handle next question
+    function nextQuestion() {
+        // Log the value of the input
+        console.log(document.querySelector('input[name="answer"]').value);
+    
+        // Submit the form
+        document.getElementById('quiz-form').submit();
+    }
+    
+    // Handle skip question
+    function skipQuestion() {
+        // Set the value of the hidden input to a random negative number
+        document.querySelector('input[name="answer"]').value = Math.floor(Math.random() * -100);
+    
+        // Log the value of the input
+        console.log(document.querySelector('input[name="answer"]').value);
+    }
 </script>
+    
 {% endblock %}
