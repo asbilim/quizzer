@@ -4,6 +4,21 @@
 
 {% block content %}
 
-<p>welcome your score is {{score}}</p>
+<div class="results min-h-[40vh] items-center justify-center my-16 font-bold flex flex-col gap-12">
+    <div class="good-title flex flex-col gap-0">
+        <h2 class="text-5xl">RESULTS</h2>
+        <p class="bg-blue-400 h-2"></p>
+    </div>
+    <h3>You are viewing the score of <span class="font-semibold">{{quiz.name}}</span> </h3>
+    {% if score > 50 %}
+        <div class="radial-progress bg-blue-400 bg-opacity-25 text-green-500 border-green-500" style="--value:{{score}}; --size:12rem; --thickness: 8px;">{{score}}%</div>
+    {% else %}
+        <div class="radial-progress bg-blue-400 bg-opacity-25 text-red-500 border-red-500" style="--value:{{score}}; --size:12rem; --thickness: 8px;">{{score}}%</div>
+    {% endif %}
+    <div class="decisions flex   gap-4 items-center  justify-center my-8">
+        <button type="submit" class="w-full px-16 leading-none text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-indigo-300 btn btn-wide no-animation">Home</button>
+        <button type="submit" class="w-full px-16 leading-none text-xs font-semibold hover:bg-red-600 hover:text-red-900 bg-transparent rounded-lg  focus:outline-none focus:ring focus:ring-indigo-300 btn btn-wide no-animation border-0 text-red-500">Reset</button>
+    </div>
+</div>
 
 {% endblock %}

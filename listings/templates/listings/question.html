@@ -68,8 +68,8 @@
             {% if current_question.question_type == 'TF' %}
                 <div class="mt-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mx-12">
                     {% for answer in current_question.answers.all %}
-                    <div class="group relative bg-white shadow-lg rounded-lg cursor-pointer transform transition-transform duration-500 ease-in-out answer" onclick="handleAnswerClick(this)" data-value="{{answer.pk}}">
-                        <div class="relative z-10 bg-gradient-to-r text-base-content leading-tight text-xs px-4 py-2 rounded-lg" data-id="{{answer.id}}">{{answer.text}}</div>
+                    <div class="group relative bg-white shadow-lg rounded-lg cursor-pointer transform transition-transform duration-500 ease-in-out p-4 hover:bg-blue-400 hover:text-white focus:bg-blue-600 focus:text-white answer" onclick="handleAnswerClick(this)" data-value="{{answer.pk}}">
+                        <div class="relative z-10 bg-gradient-to-rleading-tight text-xs px-4 py-2 rounded-lg" data-id="{{answer.id}}">{{answer.text}}</div>
                     </div>
                     {% endfor %}
                 </div>

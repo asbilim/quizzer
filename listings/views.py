@@ -4,10 +4,18 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from listings.models import Quiz, Answer, QuizSet, Question, UserQuizProgress
 
+def centanize(max,value):
 
-def results(request,score):
+    return value*100//max
 
-    return render(request,'listings/result.html',{'score':score})
+def results(request,score,quiz):
+
+    set = UserQuizProgress.objects.get(id=score)
+    quiz = Quiz.objects.get(id=quiz)
+    number_questions = quiz.questions.count()
+    question_value = quiz.question_value
+    score = centanize(number_questions*question_value,set.score)
+    return render(request,'listings/result.html',{'quiz':quiz,'score':score})
 
 def four0four(request,exception):
 
@@ -107,7 +115,7 @@ def activate_quiz(request, quiz_id):
     else:
         current_question = user_quiz.get_current_question()
         if not current_question:
-            return redirect('results-quiz',score=user_quiz.score)
+            return redirect('results-quiz',score=user_quiz.id,quiz=quiz.id)
     
     
 
@@ -143,7 +151,7 @@ def quiz_view(request, quiz_id, question_id):
 
     current_question = userquiz.get_next_question()
     if not current_question:
-        return redirect('results-quiz',score=userquiz.score)
+        return redirect('results-quiz',score=userquiz.id,quiz=quiz.id)
     current_question_index = userquiz.current_question_index
 
 
@@ -157,10 +165,10 @@ def quiz_view(request, quiz_id, question_id):
         try:
             answer = Answer.objects.get(id=answer_id)
         except Answer.DoesNotExist:
-            userquiz.mark_question_done()
+            userquiz.mark_question_done(answer.id)
             userquiz.save()
         # Check if the answer is correct
-        userquiz.mark_question_done()
+        userquiz.mark_question_done(answer.id)
         userquiz.save()
         # Otherwise, redirect to the next question
         next_question = quiz.get_next_question()

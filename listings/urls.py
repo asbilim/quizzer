@@ -9,6 +9,6 @@ urlpatterns = [
     path("exam",exam,name="exam"),
     path("quiz/<int:quiz_id>/<int:question_id>",quiz_view,name="single-quiz"),
     path("quiz/<int:quiz_id>/",activate_quiz,name="activate-quiz"),
-    path("results/<int:score>",results,name="results-quiz")
+    path("results/<int:score>/<int:quiz>",results,name="results-quiz")
 
 ]

@@ -170,12 +170,16 @@ class UserQuizProgress(models.Model):
             return questions[self.current_question_index]
         return None
 
-    def mark_question_done(self):
+    def mark_question_done(self,answer_id):
+        
+        correct_question_id = self.get_next_question().answers.filter(is_correct=True).first().id
+        print("the correct question id is: ",correct_question_id)
+        if correct_question_id == answer_id:
+            self.score += self.quiz.question_value
+        self.current_question_index += 1
         
         if self.current_question_index == len(list(self.quiz.questions.all())) - 1:
-            self.score += self.quiz.question_value
             self.is_done = True
-        self.current_question_index += 1
         self.save()
 
     def reset(self):
