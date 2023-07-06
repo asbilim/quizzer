@@ -100,30 +100,31 @@ def activate_quiz(request, quiz_id):
 
     if created:
 
-        current_question = user_quiz.quiz.questions.first()
+        current_question = user_quiz.get_current_question()
 
-        return redirect('single-quiz', quiz_id=current_question.id, question_id=1)
+        return redirect('single-quiz', quiz_id=quiz.id, question_id=1)
     
     else:
-        current_question = user_quiz.get_next_question()
+        current_question = user_quiz.get_current_question()
         if not current_question:
             return redirect('results-quiz',score=user_quiz.score)
     
     
 
     # Otherwise, redirect to the quiz view
-    return redirect('single-quiz', quiz_id=current_question.id, question_id=1)
+    return redirect('single-quiz', quiz_id=quiz.id, question_id=1)
 
 @login_required
 def quiz_view(request, quiz_id, question_id):
 
 
     user = request.user
-
+    print(quiz_id)
     try:
         quiz = Quiz.objects.get(pk=quiz_id)
     except Quiz.DoesNotExist:
         #send to the error page
+        print("i am here hahaha")
         return redirect('main-home-page')
 
     try:
