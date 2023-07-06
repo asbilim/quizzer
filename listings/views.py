@@ -92,6 +92,38 @@ def signout(request):
         return redirect('auth-login')
 
 
+
+@login_required
+def reset_quiz(request, quiz_id):
+
+    user = request.user
+    try:
+        quiz = Quiz.objects.get(pk=quiz_id)
+    except Quiz.DoesNotExist:
+        #send to the error page
+        return redirect('main-home-page')
+    
+    
+    user_quiz, created = UserQuizProgress.objects.get_or_create(user=user, quiz=quiz)
+
+
+    if created:
+
+        current_question = user_quiz.get_current_question()
+
+        return redirect('single-quiz', quiz_id=quiz.id, question_id=1)
+    
+    else:
+        user_quiz.reset()
+        current_question = user_quiz.get_current_question()
+        if not current_question:
+            return redirect('results-quiz',score=user_quiz.id,quiz=quiz.id)
+    
+    
+
+    # Otherwise, redirect to the quiz view
+    return redirect('single-quiz', quiz_id=quiz.id, question_id=1)
+
 @login_required
 def activate_quiz(request, quiz_id):
 
@@ -161,10 +193,20 @@ def quiz_view(request, quiz_id, question_id):
     if request.method == 'POST':
         # Verify answer and mark question as done here
         # You may need to adjust this to fit your answer submission form
-        answer_id = request.POST.get('answer')
+        try:
+            answer_id = request.POST.get('answer')
+            print(answer_id)
+            print("________________________________________________________________")
+        except Exception :
+            userquiz.mark_question_done(44444444444444444444444444444444444444444)
+            userquiz.save()
+            # Otherwise, redirect to the next question
+            next_question = quiz.get_next_question()
+            
+            return redirect('single-quiz', quiz_id=quiz_id, question_id=5)
         try:
             answer = Answer.objects.get(id=answer_id)
-        except Answer.DoesNotExist:
+        except Exception:
             userquiz.mark_question_done(answer.id)
             userquiz.save()
         # Check if the answer is correct

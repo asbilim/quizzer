@@ -64,7 +64,7 @@
         {% csrf_token %}
         <div class="question-card flex flex-col gap-4">
             <h3 class="text-white text-md font-medium text-center">{{ current_question.text }}</h3>
-            <input type="hidden" name="answer" value="" hidden/>
+            <input type="hidden" name="answer" value="68888888888888888888888644444444444444444444444444444" hidden/>
             {% if current_question.question_type == 'TF' %}
                 <div class="mt-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 mx-12">
                     {% for answer in current_question.answers.all %}
@@ -85,8 +85,7 @@
         </div>
 
         <div class="flex justify-center mt-24 gap-4">
-            <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-l" onclick="previousQuestion()">Previous</button>
-            <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-r" onclick="nextQuestion()">Next</button>
+            <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 leading-none lowercase rounded px-12" onclick="nextQuestion()">Next</button>
             <button type="button" class="bg-transparednt border-0 text-white font-semibold py-2 px-4" onclick="skipQuestion()">Skip</button>
         </div>
     </form>
@@ -129,10 +128,10 @@
     // Handle skip question
     function skipQuestion() {
         // Set the value of the hidden input to a random negative number
-        document.querySelector('input[name="answer"]').value = Math.floor(Math.random() * -100);
+        document.querySelector('input[name="answer"]').value = Math.floor(Math.random() * 100);
     
         // Log the value of the input
-        console.log(document.querySelector('input[name="answer"]').value);
+        document.getElementById('quiz-form').submit();
     }
 </script>
     

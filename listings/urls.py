@@ -1,4 +1,4 @@
-from .views import signin,register,home,quizset,exam,quiz_view,activate_quiz,results
+from .views import signin,register,home,quizset,exam,quiz_view,activate_quiz,results,reset_quiz
 from django.urls import path
 
 urlpatterns = [
@@ -9,6 +9,7 @@ urlpatterns = [
     path("exam",exam,name="exam"),
     path("quiz/<int:quiz_id>/<int:question_id>",quiz_view,name="single-quiz"),
     path("quiz/<int:quiz_id>/",activate_quiz,name="activate-quiz"),
-    path("results/<int:score>/<int:quiz>",results,name="results-quiz")
+    path("results/<int:score>/<int:quiz>",results,name="results-quiz"),
+    path("reset/<int:quiz_id>/",reset_quiz,name="reset-quiz"),
 
 ]

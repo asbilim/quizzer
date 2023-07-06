@@ -166,6 +166,8 @@ class UserQuizProgress(models.Model):
 
     def get_next_question(self):
         questions = list(self.quiz.questions.all())
+        if self.current_question_index == len(questions):
+            return None
         if self.current_question_index < len(questions):
             return questions[self.current_question_index]
         return None
@@ -186,7 +188,7 @@ class UserQuizProgress(models.Model):
         self.current_question_index = 0
         self.score = 0
         self.save()
-        self.initialize_questions()
+
 
 
 # Exam related models
